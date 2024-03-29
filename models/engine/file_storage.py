@@ -14,7 +14,7 @@ class FileStorage:
         filtered by class
         """
         if cls:
-            cls_name = cls.__name__ if type(cls) == type else cls
+            cls_name = cls.__name__ if isinstance(cls, type) else cls
             return {
                 key: obj
                 for key, obj in FileStorage.__objects.items()
