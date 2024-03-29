@@ -114,17 +114,37 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """ Create an object of any class"""
+        """ Create an object of any class with optional attributes """
+        arguments = args.split()
         if not args:
             print("** class name missing **")
             return
-        elif args not in HBNBCommand.classes:
+        if arguments[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
+
+        new_instance = HBNBCommand.classes[arguments[0]]()
+
+        for arg in arguments[1:]:
+            key, _, value = arg.partition('=')
+            value = self.convert_value(value)
+            if value is not None:
+                setattr(new_instance, key, value)
+
+        new_instance.save()
         print(new_instance.id)
-        storage.save()
+
+    def convert_value(self, value):
+        """Converts value to the correct type."""
+        if value.startswith("\"") and value.endswith("\""):
+            value = value[1:-1].replace('_', ' ').replace("\\\"", "\"")
+            return value
+        try:
+            if '.' in value:
+                return float(value)
+            return int(value)
+        except ValueError:
+            return None
 
     def help_create(self):
         """ Help information for the create method """
@@ -319,6 +339,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
