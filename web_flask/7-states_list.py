@@ -13,7 +13,9 @@ app = Flask(__name__)
 @app.route('/states_list', strict_slashes=False)
 def hello_8():
     states_dict = storage.all(State)
-    return render_template('7-states_list.html', states=states_dict.values())
+    # Sort states by name
+    sorted_states = sorted(states_dict.values(), key=lambda state: state.name)
+    return render_template('7-states_list.html', states=sorted_states)
 
 
 @app.teardown_appcontext
